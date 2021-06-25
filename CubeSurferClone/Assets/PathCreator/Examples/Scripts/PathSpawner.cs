@@ -4,21 +4,27 @@ using PathCreation;
 using UnityEngine;
 
 namespace PathCreation.Examples {
-
     public class PathSpawner : MonoBehaviour {
 
         public PathCreator pathPrefab;
         public PathFollower followerPrefab;
         public Transform[] spawnPoints;
 
+
+        private void Awake()
+        {
+            pathPrefab = GetComponent<PathCreator>();
+        }
+        public List<SpawnEntity> spawnEntities = new List<SpawnEntity>();
+
         void Start () {
-            foreach (Transform t in spawnPoints) {
-                var path = Instantiate (pathPrefab, t.position, t.rotation);
-                var follower = Instantiate (followerPrefab);
-                follower.pathCreator = path;
-                path.transform.parent = t;
+            //foreach (Transform t in spawnPoints) {
+            //    var path = Instantiate (pathPrefab, t.position, t.rotation);
+            //    var follower = Instantiate (followerPrefab);
+            //    follower.pathCreator = path;
+            //    path.transform.parent = t;
                 
-            }
+            //}
         }
     }
 

@@ -41,7 +41,7 @@ namespace PathCreationEditor {
         Dictionary<GlobalDisplaySettings.HandleType, Handles.CapFunction> capFunctions;
         ArcHandle anchorAngleHandle = new ArcHandle ();
         VertexPath normalsVertexPath;
-
+        
         // State variables:
         int selectedSegmentIndex;
         int draggingHandleIndex;
