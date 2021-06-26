@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public void OnBeginDrag(PointerEventData _data)
     {
         pressPosition = _data.position;
-        Debug.Log("BEGIN");
         
     }
 
@@ -30,13 +29,11 @@ public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             follower.PathSideOffset(xOffset);
             pressPosition = _data.position;
 
-            Debug.Log("DRAAG");
         }
     }
 
     public void OnEndDrag(PointerEventData _data)
     {
-        Debug.Log("END");
                                      
     }
 }

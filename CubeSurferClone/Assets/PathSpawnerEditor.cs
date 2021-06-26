@@ -16,6 +16,9 @@ public class PathSpawnerEditor : Editor
     ScreenSpacePolyLine screenSpaceLine;
     bool hasUpdatedScreenSpaceLine;
 
+    int heightCubeAmount = 1;
+    int obstacleID = 0;
+
     PathSpawnerTest spawner;
     VertexPath Path
     {
@@ -24,6 +27,59 @@ public class PathSpawnerEditor : Editor
             return spawner.pathPrefab.path;
         }
     }
+
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        switch (spawner.selectedType)
+        {                               
+            case EEntityType.OBSTACLE:
+                DrawObstacleInspector();
+                break;
+            case EEntityType.CUBE:
+                DrawCubeInspector();
+                break;
+            case EEntityType.COIN:
+                DrawCoinInspector();
+                break;
+            default:
+                break;
+        }
+    }
+
+    void DrawObstacleInspector()
+    {
+        using (var check = new EditorGUI.ChangeCheckScope())
+        {
+            obstacleID = EditorGUILayout.IntSlider(obstacleID, 0, PrefabsHolder.instance.obstaclePrefabs.Count - 1);
+
+            if (check.changed)
+            {
+                SceneView.RepaintAll();
+                EditorApplication.QueuePlayerLoopUpdate();
+            }
+        }
+    }
+
+    void DrawCubeInspector()
+    {
+        using (var check = new EditorGUI.ChangeCheckScope())
+        {
+            heightCubeAmount = EditorGUILayout.IntSlider(heightCubeAmount, 1, 10);
+
+            if (check.changed)
+            {
+                SceneView.RepaintAll();
+                EditorApplication.QueuePlayerLoopUpdate();
+            }
+        }
+    }
+
+    void DrawCoinInspector()
+    {
+
+    }
+
     private void OnSceneGUI()
     {
         if (spawner.pathPrefab)
@@ -39,10 +95,26 @@ public class PathSpawnerEditor : Editor
         UpdatePathMouseInfo();
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && guiEvent.shift)
         {
-            Undo.RecordObject(spawner, "Added Entity");
             Vector3 newPathPoint = pathMouseInfo.closestWorldPointToMouse;
-            spawner.AddSpawnEntity(spawner.selectedType, newPathPoint, 0, pathMouseInfo.distanceAlongPathWorld);
-            spawner.UpdateEntities();
+
+            switch (spawner.selectedType)
+            {
+                case EEntityType.OBSTACLE:
+                    Undo.RecordObject(spawner, "Added Entity");
+                    spawner.AddSpawnEntity(spawner.selectedType, newPathPoint, obstacleID, pathMouseInfo.distanceAlongPathWorld);
+                    spawner.UpdateEntities();
+                    break;
+                case EEntityType.CUBE:
+                    Undo.RecordObject(spawner, "Added Entity");
+                    spawner.AddSpawnEntity(spawner.selectedType, newPathPoint, 0, pathMouseInfo.distanceAlongPathWorld, heightCubeAmount);
+                    spawner.UpdateEntities();
+                    break;
+                case EEntityType.COIN:
+                    break;
+                default:
+                    break;
+            }
+
         }
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && guiEvent.control)
         {

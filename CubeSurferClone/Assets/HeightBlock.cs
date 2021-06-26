@@ -6,6 +6,8 @@ public class HeightBlock : MonoBehaviour
 {
     SpawnEntity entity;
 
+    public int height;
+
     SpawnEntity Entity
     {
         get

@@ -15,6 +15,8 @@ public class SpawnEntity
     public Vector3 position;
     public GameObject prefab;
     public float dst;
+    public int height;
+   
 
 
     public SpawnEntity(EEntityType _type, Vector3 _position,int _id, float _dst)

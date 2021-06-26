@@ -11,6 +11,14 @@ namespace PathCreation.Examples
         public float speed = 5;
         protected float distanceTravelled;
 
+        public float DistanceTravelled
+        {
+            get
+            {
+                return distanceTravelled;
+            }
+        }
+
         void Start() {
             if (pathCreator != null)
             {

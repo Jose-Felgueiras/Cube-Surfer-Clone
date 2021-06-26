@@ -11,7 +11,13 @@ public class PathFollowerTest : PathFollower
     public float offsetLimit = 5.0f;
     float offset;
 
-
+    public float Offset
+    {
+        get
+        {
+            return offset;
+        }
+    }
     
 
     protected override void Move()
