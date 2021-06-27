@@ -20,3 +20,9 @@ Day 3 Summary:
 - Added pit obstacle entity;
 - Added finish line entity;
 - Added functionality to Editor for ease of placement of entities onto path;
+
+Day 4 Summary:
+- Added simple procedural level generation (needs better algorithm);
+- Added simple UI;
+- Saving needed data to PlayerPrefs;
+- Saving level into Scriptable Object (save every generated level?);
