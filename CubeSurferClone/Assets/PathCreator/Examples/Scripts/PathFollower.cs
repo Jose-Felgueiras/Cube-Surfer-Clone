@@ -10,6 +10,7 @@ namespace PathCreation.Examples
         public EndOfPathInstruction endOfPathInstruction;
         public float speed = 5;
         protected float distanceTravelled;
+        public float startDistanceTravelled;
 
         public float DistanceTravelled
         {
@@ -24,10 +25,11 @@ namespace PathCreation.Examples
             {
                 // Subscribed to the pathUpdated event so that we're notified if the path changes during the game
                 pathCreator.pathUpdated += OnPathChanged;
+                distanceTravelled = startDistanceTravelled;
             }
         }
 
-        void Update()
+        void FixedUpdate()
         {
             if (pathCreator != null)
             {

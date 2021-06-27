@@ -53,6 +53,7 @@ public class PitObstacle : Obstacle
                     if (Mathf.Abs(Mathf.FloorToInt(newHeight)) >= surfer.Height)
                     {
                         //GAME OVER
+                        UIManager.instance.ShowGameOver();
                         follower.enabled = false;
                         return;
                     }

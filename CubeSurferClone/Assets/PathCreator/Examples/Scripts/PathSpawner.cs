@@ -15,6 +15,7 @@ namespace PathCreation.Examples {
         {
             pathPrefab = GetComponent<PathCreator>();
         }
+        [SerializeField]
         public List<SpawnEntity> spawnEntities = new List<SpawnEntity>();
 
         void Start () {

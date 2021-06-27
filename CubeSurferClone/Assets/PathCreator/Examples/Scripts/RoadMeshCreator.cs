@@ -15,7 +15,7 @@ namespace PathCreation.Examples {
         public Material undersideMaterial;
         public float textureTiling = 1;
 
-        [SerializeField, HideInInspector]
+        [SerializeField]
         GameObject meshHolder;
 
         MeshFilter meshFilter;
@@ -116,6 +116,12 @@ namespace PathCreation.Examples {
             mesh.SetTriangles (underRoadTriangles, 1);
             mesh.SetTriangles (sideOfRoadTriangles, 2);
             mesh.RecalculateBounds ();
+
+            meshCollider = meshHolder.GetComponent<MeshCollider>();
+            meshCollider.sharedMesh = mesh;
+            meshCollider.convex = true;
+            meshHolder.layer = LayerMask.NameToLayer("Floor");
+
         }
 
         // Add MeshRenderer and MeshFilter components to this gameobject if not already attached
@@ -149,6 +155,8 @@ namespace PathCreation.Examples {
             }
             meshFilter.sharedMesh = mesh;
             meshCollider.sharedMesh = mesh;
+            meshCollider.convex = true;
+            meshHolder.layer = LayerMask.NameToLayer("Floor");
         }
 
         void AssignMaterials () {
@@ -158,5 +166,13 @@ namespace PathCreation.Examples {
             }
         }
 
+
+        public GameObject MeshHolder
+        {
+            get
+            {
+                return meshHolder;
+            }
+        }
     }
 }
