@@ -31,7 +31,7 @@ public class PathFollowerTest : PathFollower
             Debug.Log("END");
 
             PlayerPrefs.SetInt("completedLevel", PlayerPrefs.GetInt("currentLevel", 1));
-            UIManager.instance.NextLevel();
+            UIManager.instance.NextLevel(GameManager.instance.score * GameManager.instance.scoreMultiplier);
             this.enabled = false;
         }
     }

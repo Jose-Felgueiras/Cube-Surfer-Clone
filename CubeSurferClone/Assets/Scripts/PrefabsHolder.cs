@@ -6,8 +6,11 @@ public class PrefabsHolder : MonoBehaviour
 {
 
     public static PrefabsHolder instance;
+    [SerializeField]
     public List<GameObject> obstaclePrefabs = new List<GameObject>();
-    public List<GameObject> coinPrefabs = new List<GameObject>();
+    [SerializeField]
+    public GameObject coinPrefabs;
+    [SerializeField]
     public GameObject heightBlock;
 
 

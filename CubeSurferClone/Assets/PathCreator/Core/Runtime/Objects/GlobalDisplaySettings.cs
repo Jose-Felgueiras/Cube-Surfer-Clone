@@ -5,6 +5,7 @@ using UnityEngine;
 namespace PathCreation
 {
     //[CreateAssetMenu()]
+    [System.Serializable]
     public class GlobalDisplaySettings : ScriptableObject
     {
 

@@ -29,13 +29,15 @@ public class PathSpawnerTest : PathSpawner
         {
 
             GameObject obj = Instantiate(entity.prefab, holder.transform);
-            obj.transform.position = entity.position + obj.transform.right * entity.offset;
+            obj.transform.position = entity.position;
             obj.transform.rotation = pathPrefab.path.GetRotationAtDistance(entity.dst);
+            obj.transform.position = entity.position + obj.transform.up * entity.offset;
 
             if (obj.GetComponentInChildren<Obstacle>())
             {
                 obj.GetComponentInChildren<Obstacle>().entity = entity;
             }
+
             if (obj.GetComponentInChildren<HeightBlock>())
             {
                 obj.GetComponentInChildren<HeightBlock>().height = entity.height;
@@ -55,6 +57,8 @@ public class PathSpawnerTest : PathSpawner
                 obj.GetComponentInChildren<HeightBlock>().gameObject.GetComponent<BoxCollider>().center = newCenter;
                 obj.GetComponentInChildren<HeightBlock>().gameObject.GetComponent<BoxCollider>().size = newHeight;
             }
+         
+
             entities.Add(obj);
         }
     }

@@ -10,7 +10,6 @@ public enum EEntityType{
 public class SpawnEntity
 {
     public EEntityType type;
-    public PathCreator path;
     public float offset = 0;
     public Vector3 position;
     public GameObject prefab;
@@ -36,6 +35,7 @@ public class SpawnEntity
                 prefab = PrefabsHolder.instance.heightBlock;
                 break;
             case EEntityType.COIN:
+                prefab = PrefabsHolder.instance.coinPrefabs;
                 break;
             default:
                 break;
@@ -60,6 +60,7 @@ public class SpawnEntity
                 prefab = PrefabsHolder.instance.heightBlock;
                 break;
             case EEntityType.COIN:
+                prefab = PrefabsHolder.instance.coinPrefabs;
                 break;
             default:
                 break;

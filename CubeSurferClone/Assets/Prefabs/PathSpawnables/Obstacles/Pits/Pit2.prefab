@@ -148,7 +148,7 @@ MonoBehaviour:
     prefab: {fileID: 0}
     dst: 0
     height: 0
-  sinkRate: 5
+  sinkRate: 9.81
 --- !u!1 &7353431022314088531
 GameObject:
   m_ObjectHideFlags: 0

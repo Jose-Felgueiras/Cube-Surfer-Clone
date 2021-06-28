@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
 
     public PathFollowerTest target;
 
+    public float smoothSpeed = 20f;
 
     Vector3 direction;
     float distance;
@@ -21,7 +22,7 @@ public class CameraFollow : MonoBehaviour
         set
         {
             distance = value;
-            transform.position = target.transform.position + direction * distance;
+            distance = Mathf.Clamp(distance, 16f, 30f);
         }
     
     }
@@ -36,14 +37,20 @@ public class CameraFollow : MonoBehaviour
         {
             height = value;
             Vector3 newPos = new Vector3(-height, 0, 0);
-            transform.localPosition += newPos;
         }
     }
 
 
     private void Start()
     {
-        direction = target.transform.position - transform.position;
-        distance = Vector3.Distance(target.transform.position, transform.position);
+        direction =   transform.localPosition;
+        distance = direction.magnitude;
+    }
+
+    private void Update()
+    {
+           Vector3 desiredPosition = direction.normalized * distance + new Vector3(-height, 0, 0);
+        Vector3 smoothedPosition = Vector3.Lerp(transform.localPosition, desiredPosition, smoothSpeed * Time.deltaTime);
+        transform.localPosition = smoothedPosition;
     }
 }

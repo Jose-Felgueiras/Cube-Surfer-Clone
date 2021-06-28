@@ -12,6 +12,8 @@ public class PitObstacle : Obstacle
     Vector3 newCenter = Vector3.zero;
     float newHeight = 0;
     public float sinkRate = 5.0f;
+    public int[] collumnsOcupy = new int[5];
+
     PitObstacle()
     {
         type = EObstacleType.PIT;
@@ -28,7 +30,18 @@ public class PitObstacle : Obstacle
         {
             surfer = collision.gameObject.GetComponent<Surfer>();
             follower = collision.gameObject.GetComponentInParent<PathFollowerTest>();
-        } 
+            AudioManager.instance.Play("pit");
+
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<Surfer>())
+        {
+            AudioManager.instance.Stop("pit");
+
+        }
     }
     private void FixedUpdate()
     {
@@ -49,19 +62,26 @@ public class PitObstacle : Obstacle
             {
                 if (isSurferInside)
                 {
-                    surfer.SetTowerCollision(true);
                     if (Mathf.Abs(Mathf.FloorToInt(newHeight)) >= surfer.Height)
                     {
                         //GAME OVER
                         UIManager.instance.ShowGameOver();
                         follower.enabled = false;
+                        surfer = null;
+                        AudioManager.instance.Stop("pit");
+                        AudioManager.instance.Play("death");
+
                         return;
                     }
                     newHeight = Mathf.FloorToInt(newHeight);
                     surfer.transform.localPosition = Vector3.left * (surfer.Height + newHeight);
-
-                    surfer.Height += Mathf.FloorToInt(newHeight);
+                    int heightToRemove = Mathf.Abs(Mathf.FloorToInt(newHeight));
+                    surfer.PitRemove(heightToRemove);
+                    surfer.Height -= heightToRemove;
                     isSurferInside = false;
+                    surfer = null;
+                    AudioManager.instance.Stop("pit");
+
                     return;
                 }
             }
@@ -77,7 +97,20 @@ public class PitObstacle : Obstacle
 
             }
         }
-        
+    }
+
+    public int GetLowestCollumnOcupy()
+    {
+        int lowest = 10;
+        for (int i = 0; i < collumnsOcupy.Length; i++)
+        {
+            if (collumnsOcupy[i] < lowest)
+            {
+                lowest = collumnsOcupy[i];
+            }
+        }
+
+        return lowest;
     }
 
     private void OnDrawGizmos()

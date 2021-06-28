@@ -2,6 +2,7 @@
 using UnityEngine;
 
 namespace PathCreation {
+    [System.Serializable]
     public class PathCreator : MonoBehaviour {
 
         /// This class stores data for the path editor, and provides accessors to get the current vertex and bezier path.
@@ -60,7 +61,10 @@ namespace PathCreation {
             get {
                 return editorData;
             }
-
+            set
+            {
+                editorData = value;
+            }
         }
 
         public void TriggerPathUpdate () {

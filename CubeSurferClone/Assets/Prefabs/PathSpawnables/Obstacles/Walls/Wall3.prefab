@@ -219,6 +219,13 @@ MonoBehaviour:
     dst: 0
     height: 0
   offsetHeight: 0200000000000000000000000000000002000000
+  hasBlock:
+  - atHeight: 0101
+  - atHeight: 
+  - atHeight: 
+  - atHeight: 
+  - atHeight: 0101
+  isFinish: 0
 --- !u!1 &7353431020610201196
 GameObject:
   m_ObjectHideFlags: 0

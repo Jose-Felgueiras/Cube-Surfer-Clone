@@ -34,9 +34,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject levelProgressPanel;
     [SerializeField]
+    TMP_Text levelTotalScore;
+    [SerializeField]
     GameObject gameOverPanel;
     [SerializeField]
     GameObject nextLevelPanel;
+    [SerializeField]
+    GameObject clickMePanel;
     public void UpdateUI()
     {
         scoreText.text = PlayerPrefs.GetInt("score", 0).ToString();
@@ -47,11 +51,14 @@ public class UIManager : MonoBehaviour
             levelIndicator.transform.GetChild(i).GetComponentInChildren<TMP_Text>().text = (currentLevel + i).ToString();
         }
         levelIndicatorPanel.SetActive(true);
+        clickMePanel.SetActive(true);
+
     }
 
     public void StartGame()
     {
         levelIndicatorPanel.SetActive(false);
+        clickMePanel.SetActive(false);
         levelProgressPanel.SetActive(true);
     }
 
@@ -67,9 +74,13 @@ public class UIManager : MonoBehaviour
         gameOverPanel.SetActive(true);
     }
 
-    public void NextLevel()
+    public void NextLevel(int _score)
     {
+        AudioManager.instance.Play("win");
+
         levelProgressPanel.SetActive(false);
+        levelTotalScore.text = "+ " + _score.ToString();
+        PlayerPrefs.SetInt("score", PlayerPrefs.GetInt("score", 0) + _score);
 
         nextLevelPanel.SetActive(true);
     }

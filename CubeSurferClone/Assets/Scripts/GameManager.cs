@@ -35,32 +35,52 @@ public class GameManager : MonoBehaviour
     PlayerController controller;
 
     [SerializeField]
+    List<Level> createdLevels = new List<Level>();
+
+    [SerializeField]
     PathFollowerTest surfer;
+
+    public int score;
+    public int scoreMultiplier;
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("completedLevel", 0) >= PlayerPrefs.GetInt("currentLevel", 1))
+        if (PlayerPrefs.GetInt("completedLevel", 0) >= PlayerPrefs.GetInt("currentLevel", 0))
         {
-            PlayerPrefs.SetInt("currentLevel", PlayerPrefs.GetInt("currentLevel", 1) + 1);
-            GenerateNewLevel(PlayerPrefs.GetInt("completedLevel", 1) + 1);
+            Debug.Log("Generating new Level...");
+
+            GenerateNewLevel(PlayerPrefs.GetInt("completedLevel", 0) + 1);
         }
-        LoadLevel(level);
+        LoadLevel(PlayerPrefs.GetInt("currentLevel", 0));
+
         UIManager.instance.UpdateUI();
 
         Camera.main.GetComponent<CameraFollow>().target = surfer;
     }
 
-    public void LoadLevel(Level _level)
+    public void LoadLevel(int _id)
     {
-        GameObject creatorPrefab = Instantiate(_level.creator.gameObject);
-        GameObject spawnerPrefab = Instantiate(_level.spawner.gameObject);
+        //ERRORS WITH SERIALIZATION
+        //LevelData data = SaveLoad.LoadData(_id);
+        //if (data == null)
+        //{
+        //    return;
+        //}
+        Level newLevel = ScriptableObject.CreateInstance<Level>();
+        //newLevel.id = data.id;
+        newLevel.creator = level.creator;
+        newLevel.spawner = level.spawner;
+        GameObject creatorPrefab = Instantiate(newLevel.creator.gameObject);
+        GameObject spawnerPrefab = Instantiate(newLevel.spawner.gameObject);
 
         creator = creatorPrefab.GetComponent<PathCreator>();
         spawner = spawnerPrefab.GetComponent<PathSpawnerTest>();
         road = creatorPrefab.GetComponent<RoadMeshCreator>();
+        //creator.EditorData = data.creatorData;
         creator.TriggerPathUpdate();
         road.TriggerUpdate();
         spawner.pathPrefab = creator;
+        //spawner.spawnEntities = data.spawnerData;
         spawner.UpdateEntities();
 
         GameObject player = Instantiate(surfer.gameObject);
@@ -74,6 +94,12 @@ public class GameManager : MonoBehaviour
 
     public void GenerateNewLevel(int _id)
     {
+
+        Level newLevel = ScriptableObject.CreateInstance<Level>();
+        newLevel.id = _id;
+
+
+
 
         level.creator.EditorData.ResetBezierPath(level.creator.transform.position, false);
         level.creator.bezierPath.Space = PathSpace.xz;
@@ -94,44 +120,187 @@ public class GameManager : MonoBehaviour
         level.creator.bezierPath.AddSegmentToEnd(lastPos);
 
 
-
         level.spawner.ClearData();
-        float dstBetweenObstacles = 30f;
+        float sectionDst = 30f;
+        float minDstBetweenObstacles = 10f;
         float minDstBetweenCubes = 5f;
-        int minBlocksToAdd = 0;
+
+        float minDstBetweenSpawnables = 5.0f;
 
 
-        int maxObstacles = (int)(level.creator.path.length / dstBetweenObstacles);
-        for (int i = 1; i < maxObstacles; i++)
+        int maxObstacles = (int)(level.creator.path.length / sectionDst);
+        //Start at 2 to give room to increase height
+        //PLAYER STARTS AT 20 TO MAKE PATH APPEAR BEHIND
+
+        for (int i = 2; i < maxObstacles - 1; i++)
         {
+            //THERE ARE 60 - 20 = 40 UNITS OF SPACE TO ADD THINGS HERE
+            if (i == 2)
+            {
+
+                int randHeight = Random.Range(2, 6);
+                int randCoins = Random.Range(2, 10);
+                int randHeight2 = Random.Range(0, randHeight / 2);
+
+                randHeight -= randHeight2;
+
+                int maxSpawnables = (int)(40f / minDstBetweenSpawnables);
+                //-1 To Avoid Spawn Inside Player
+                for (int j = maxSpawnables - 1; j >= 0; j--)
+                {
+                    //Spawn Height Blocks First
+                    float spawnDst = 60f - (j * minDstBetweenSpawnables);
+                    int spawnColumn = Random.Range(-2, 2);
+                    float spawnOffset = spawnColumn;
+
+                    if (Random.value < 0.5)
+                    {
+                        if (randHeight > 0)
+                        {
+                            level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 1, spawnOffset);
+                            randHeight--;
+                            continue;
+                        }
+                        else
+                        {
+                            if (randHeight2 > 0)
+                            {
+                                level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 2, spawnOffset);
+                                randHeight2--;
+                                continue;
+                            }
+                            else
+                            {
+                                if (randCoins > 0)
+                                {
+                                    level.spawner.AddSpawnEntity(EEntityType.COIN, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 2, spawnOffset);
+                                    randCoins--;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (randHeight2 > 0)
+                        {
+                            level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 2, spawnOffset);
+                            randHeight2--;
+                            continue;
+                        }
+                        else
+                        {
+                            if (randHeight > 0)
+                            {
+                                level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 1, spawnOffset);
+                                randHeight--;
+                                continue;
+                            }
+                            else
+                            {
+                                if (randCoins > 0)
+                                {
+                                    level.spawner.AddSpawnEntity(EEntityType.COIN, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 2, spawnOffset);
+                                    randCoins--;
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+                continue;
+            }
+
             if (Random.value >= 0.5)
             {
-                level.spawner.AddSpawnEntity(EEntityType.OBSTACLE, level.creator.path.GetPointAtDistance(dstBetweenObstacles * i), Random.Range(0, 5), dstBetweenObstacles * i);
-                if (level.spawner.spawnEntities[level.spawner.spawnEntities.Count - 1].prefab.GetComponent<WallObstacle>())
+
+                int sectionObstacleAmount = Random.Range(2, 4);
+                int[] obstacleIDs = new int[sectionObstacleAmount];
+                int[] minRequiredHeight = new int[sectionObstacleAmount];
+                for (int k = 0; k < sectionObstacleAmount; k++)
                 {
-                    minBlocksToAdd += level.spawner.spawnEntities[level.spawner.spawnEntities.Count - 1].prefab.GetComponent<WallObstacle>().GetLowestPoint();
+                    obstacleIDs[k] = Random.Range(0, PrefabsHolder.instance.obstaclePrefabs.Count - 1);
+
+                    if (PrefabsHolder.instance.obstaclePrefabs[obstacleIDs[k]].GetComponentInChildren<WallObstacle>())
+                    {
+
+                        minRequiredHeight[k] = PrefabsHolder.instance.obstaclePrefabs[obstacleIDs[k]].GetComponentInChildren<WallObstacle>().GetLowestPoint();
+                    }
+                    if (PrefabsHolder.instance.obstaclePrefabs[obstacleIDs[k]].GetComponentInChildren<PitObstacle>())
+                    {
+
+                        minRequiredHeight[k] = PrefabsHolder.instance.obstaclePrefabs[obstacleIDs[k]].GetComponentInChildren<PitObstacle>().GetLowestCollumnOcupy();
+                    }
+
                 }
 
-                if (level.spawner.spawnEntities[level.spawner.spawnEntities.Count - 1].prefab.GetComponent<PitObstacle>())
+                int maxSpawnables = (int)(sectionDst / minDstBetweenObstacles);
+                int currentObstacle = 0;
+                for (int l = 0; l < maxSpawnables; l++)
                 {
-                    minBlocksToAdd += 5;
+                    if (currentObstacle < sectionObstacleAmount)
+                    {
+                        float spawnDst = i * sectionDst - (l * minDstBetweenObstacles);
+                        int spawnColumn = Random.Range(-2, 2);
+                        float spawnOffset = spawnColumn;
+
+
+                        if (minRequiredHeight[currentObstacle] > 0)
+                        {
+                            level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst - minDstBetweenCubes), 0, spawnDst - minDstBetweenCubes, minRequiredHeight[currentObstacle], spawnOffset);
+                            level.spawner.AddSpawnEntity(EEntityType.OBSTACLE, level.creator.path.GetPointAtDistance(spawnDst), obstacleIDs[currentObstacle], spawnDst);
+                            currentObstacle++;
+                        }
+                        else
+                        {
+                            level.spawner.AddSpawnEntity(EEntityType.OBSTACLE, level.creator.path.GetPointAtDistance(spawnDst), obstacleIDs[currentObstacle], spawnDst);
+                            currentObstacle++;
+                        }
+                    }
                 }
-               
+            }
+            else
+            {
+                //SPAWN COINS
+                int sectionCoinsAmount = Random.Range(10, 30);
+                int maxSpawnables = (int)(sectionDst / minDstBetweenSpawnables);
+                for (int l = 0; l < maxSpawnables; l++)
+                {
+                    float spawnDst = i * sectionDst - (l * minDstBetweenSpawnables);
+                    int spawnColumn = Random.Range(-2, 2);
+                    float spawnOffset = spawnColumn;
+
+                    if (Random.value <= 0.1)
+                    {
+                        //SPAWN HEIGHT CUBE
+                        level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 1, spawnOffset);
+
+                    }
+                    else
+                    {
+                        level.spawner.AddSpawnEntity(EEntityType.COIN, level.creator.path.GetPointAtDistance(spawnDst), 0, spawnDst, 2, spawnOffset);
+
+                    }
+                }
+
+                
+
             }
 
         }
         level.spawner.AddSpawnEntity(EEntityType.OBSTACLE, level.creator.path.GetPointAtDistance(level.creator.path.length - 40f, EndOfPathInstruction.Stop), 6, level.creator.path.length - 40f);
 
 
-        minBlocksToAdd += Random.Range(15, 35);
-        for (int i = 3; i < minBlocksToAdd + 3; i++)
-        {
-            int height = Random.Range(1, 4);
-            float offset = Random.Range(-2f, 2f);
-            float dst = Random.Range(minDstBetweenCubes, minDstBetweenCubes + 25);
-            level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(dst * i), 0, dst * i, height, offset);
-            minBlocksToAdd -= height;
-        }
+        //ERRORS WITH SERIALIZATION
+        //newLevel.creator = level.creator;
+        //newLevel.spawner = level.spawner;
+        ////SaveLoad.SaveData(newLevel);
+        ///
+
+        PlayerPrefs.SetInt("currentLevel", PlayerPrefs.GetInt("currentLevel", 0) + 1);
+        PlayerPrefs.SetInt("generatedLevels", _id);
 
     }
 

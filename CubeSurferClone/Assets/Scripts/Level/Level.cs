@@ -4,12 +4,14 @@ using UnityEngine;
 using PathCreation;
 using PathCreation.Examples;
 
+[CreateAssetMenu(fileName ="Level")]
 public class Level : ScriptableObject
 {
     [SerializeField]
-    int id;
+    public int id;
     [SerializeField]
     public PathCreator creator;
     [SerializeField]
     public PathSpawnerTest spawner;
+
 }

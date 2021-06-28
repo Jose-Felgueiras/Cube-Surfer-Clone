@@ -4,6 +4,7 @@ using PathCreation;
 using UnityEngine;
 
 namespace PathCreation.Examples {
+    [System.Serializable]
     public class PathSpawner : MonoBehaviour {
 
         public PathCreator pathPrefab;
