@@ -26,3 +26,14 @@ Day 4 Summary:
 - Added simple UI;
 - Saving needed data to PlayerPrefs;
 - Saving level into Scriptable Object (save every generated level?);
+
+Day 5 Summary:
+- Fixed procedural generation;
+- Added score;
+- Fixed camera;
+- Cleaned code (needs more refactoring)
+
+TODO:
+- Fix serialization problems (can't save every level);
+- Add level selector options;
+- Add juice
