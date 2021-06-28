@@ -37,3 +37,4 @@ TODO:
 - Fix serialization problems (can't save every level);
 - Add level selector options;
 - Add juice
+- Add more obstacles (proc gen?)
