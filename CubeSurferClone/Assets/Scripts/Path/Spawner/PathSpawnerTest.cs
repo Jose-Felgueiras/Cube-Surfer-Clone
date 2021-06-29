@@ -12,7 +12,7 @@ public class PathSpawnerTest : PathSpawner
     [SerializeField, HideInInspector]
     List<GameObject> entities = new List<GameObject>();
     GameObject holder;
-
+    //CLEARS ALL OBJECTS ON THE PATH AND SPAWN ALL SAVED ENTITIES
     public virtual void UpdateEntities()
     {
         foreach (GameObject item in entities)
@@ -63,6 +63,7 @@ public class PathSpawnerTest : PathSpawner
         }
     }
 
+    //SAVE ENTITIES
     public void AddSpawnEntity(EEntityType _type, Vector3 _position, int _id, float _dst)
     {
         SpawnEntity entity = new SpawnEntity(_type, _position, _id, _dst);
@@ -82,6 +83,7 @@ public class PathSpawnerTest : PathSpawner
         spawnEntities.Add(entity);
     }
 
+    //GETS CLOSEST ENTITY TO WORLD POSITION
     public int GetClosestEntityToPoint(Vector3 _pos)
     {
         float minDist = 10f;
@@ -97,6 +99,7 @@ public class PathSpawnerTest : PathSpawner
         return id;
     }
 
+    //REMOVES ENTITY FROM SAVED ENTITIES
     public void RemoveEntity(int _index)
     {
         if (_index >= 0)
@@ -106,6 +109,7 @@ public class PathSpawnerTest : PathSpawner
         }
     }
 
+    //CLEARS ALL OBJECTS AND SAVED ENTITIES
     public void ClearData()
     {
         foreach (GameObject item in entities)

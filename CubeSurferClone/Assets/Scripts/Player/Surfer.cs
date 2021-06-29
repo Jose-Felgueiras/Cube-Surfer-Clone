@@ -31,6 +31,8 @@ public class Surfer : MonoBehaviour
         {
             if (value > height)
             {
+
+                //ADD CUBES UNDER TRANSFORM
                 transform.localPosition = Vector3.left * (value) + Vector3.left * .5f;
                 for (int i = 0; i < value - height; i++)
                 {
@@ -44,9 +46,11 @@ public class Surfer : MonoBehaviour
                     rb.mass = 1000;
                     rb.useGravity = false;
                     cube.transform.SetParent(transform);
+                    //CUBES ROTATION IS OFFSET BECAUSE OF PATH FOLLOW, RIGHT IS DOWN
                     cube.transform.localPosition = Vector3.right * cubesHeight.Count;
                     cube.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
+                //UPDATE COLLIDER TO BE SIZE OF WHOLE STACK
                 Vector3 newCenter = Vector3.zero;
                 Vector3 newHeight = Vector3.one;
                 newCenter.x = -((transform.localPosition.x + .5f) / 2);
@@ -65,6 +69,7 @@ public class Surfer : MonoBehaviour
                 {
                     Camera.main.GetComponent<CameraFollow>().Distance += value - height;
                     height = value;
+                    //UPDATE COLLIDER TO BE SIZE OF WHOLE STACK
                     Vector3 newCenter = Vector3.zero;
                     Vector3 newHeight = Vector3.one;
                     newCenter.x = ((height + 1) / 2) - .5f;
@@ -95,6 +100,7 @@ public class Surfer : MonoBehaviour
         SetTowerCollision(false);
         SetStackGravity(false);
 
+        //HIT HEIGHTBLOCK
         if (collision.gameObject.GetComponent<HeightBlock>())
         {
             hitObj = collision.gameObject;
@@ -106,6 +112,7 @@ public class Surfer : MonoBehaviour
             return;
         }
 
+        //HIT COIN
         if (collision.gameObject.GetComponent<Coin>())
         {
             GameManager.instance.score += 1;
@@ -115,6 +122,7 @@ public class Surfer : MonoBehaviour
             return;
         }
 
+        //HIT WALL
         if (collision.gameObject.GetComponentInParent<WallObstacle>())
         {
             insideObstacle = true;
@@ -123,38 +131,43 @@ public class Surfer : MonoBehaviour
 
             int[] offsetLimits = new int[2];
             //SPLIT ROAD INTO COLUMNS FROM 0 TO 4
-            //LEFT_MOST COLUMN IS 0
+            //LEFTMOST COLUMN IS 0
             offsetLimits[0] = Mathf.Clamp(Mathf.FloorToInt(follower.Offset + follower.offsetLimit - .5f), 0, 4);
             offsetLimits[1] = Mathf.Clamp(Mathf.CeilToInt(follower.Offset + follower.offsetLimit + .5f), 0, 4);
 
+            //CHECK WHAT COLLUMN SHOULD BE CONSIDERED HIT
             int obstacleHeight = Mathf.Max(collision.gameObject.GetComponentInParent<WallObstacle>().offsetHeight[offsetLimits[0]], collision.gameObject.GetComponentInParent<WallObstacle>().offsetHeight[offsetLimits[1]]);
-
-            int hitRow = -1;
+            int hitColl = -1;
             if (obstacleHeight == collision.gameObject.GetComponentInParent<WallObstacle>().offsetHeight[offsetLimits[0]])
             {
-                hitRow = offsetLimits[0];
+                hitColl = offsetLimits[0];
             }
             if (obstacleHeight == collision.gameObject.GetComponentInParent<WallObstacle>().offsetHeight[offsetLimits[1]])
             {
-                hitRow = offsetLimits[1];
+                hitColl = offsetLimits[1];
             }
 
-            if (hitRow >= 0)
+            //CHECK HOW MANY BLOCKS TO REMOVE
+            if (hitColl >= 0)
             {
-                blocksToRemove = collision.gameObject.GetComponentInParent<WallObstacle>().hasBlock[hitRow].atHeight;
+                blocksToRemove = collision.gameObject.GetComponentInParent<WallObstacle>().hasBlock[hitColl].atHeight;
             }
 
 
+            //UPDATE END SCORE MULTIPLIER
             if (collision.gameObject.GetComponentInParent<WallObstacle>().isFinish)
             {
                 GameManager.instance.scoreMultiplier = collision.gameObject.GetComponentInParent<WallObstacle>().scoreMultiplier;
             }
 
+            //CHECK IS CURRENT HEIGHT IS ENOUGH TO PASS
             if (height >= obstacleHeight)
             {
-
                 //PASS
+
                 heightToRemove = 0;
+
+                //REMOVE BLOCKS AT NEEDED HEIGHT AND SET HEIGHT TO REMOVE
                 for (int i = 0; i < blocksToRemove.Length; i++)
                 {
                     if (blocksToRemove[i])
@@ -181,13 +194,10 @@ public class Surfer : MonoBehaviour
                     AudioManager.instance.Play("wall_hit");
                 }
 
-
-                
-
-
             }
             else
             {
+                //CHECK IF HIT WALL IS A FINISH WALL
                 if (collision.gameObject.GetComponentInParent<WallObstacle>().isFinish)
                 {
                     //WIN
@@ -199,8 +209,6 @@ public class Surfer : MonoBehaviour
                 else
                 {
                     AudioManager.instance.Play("death");
-
-
                     //GAME OVER
                     UIManager.instance.ShowGameOver();
                     follower.enabled = false;
@@ -210,8 +218,11 @@ public class Surfer : MonoBehaviour
 
             }
         }
+
+        //HIT PIT DETECTION MADE INSIDE PitObstacle
     }
 
+    //CLEAR SOME DATA
     public void OnCollisionExit(Collision collision)
     {
         if (hitObj)
@@ -234,6 +245,7 @@ public class Surfer : MonoBehaviour
         }
     }
 
+    //ONLY UPDATE STACK HEIGHT AFTER PLAYER HAS LEFT THE COLLISION BOUNDS
     private void Update()
     {
         if (insideObstacle)
@@ -264,7 +276,8 @@ public class Surfer : MonoBehaviour
             }
         }
     }
-
+    
+    //CORRECT STACK BLOCKS POSITIONS
     private void SetTowerStackPositions()
     {
         for (int i = 0; i < cubesHeight.Count; i++)
@@ -281,6 +294,7 @@ public class Surfer : MonoBehaviour
         }
     }
 
+    //REMOVE
     public void PitRemove(int _value)
     {
         int amount = Mathf.Clamp(_value, 0, cubesHeight.Count);
@@ -292,6 +306,7 @@ public class Surfer : MonoBehaviour
         }
     }    
 
+    //CHECK IF BLOCKS ARE AT THEIR CORRECT HEIGHT POSITION
     bool IsHeightStacked()
     {
         for (int i = 0; i < cubesHeight.Count; i++)
@@ -304,6 +319,7 @@ public class Surfer : MonoBehaviour
         return true;
     }
 
+    //SMOOTH CORRECTION OF STACK BLOCKS POSITIONS
     IEnumerator SetStackHeight()
     {
 

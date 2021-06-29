@@ -66,9 +66,4 @@ public class SpawnEntity
                 break;
         }
     }
-    public void Create()
-    {
-
-    }
-
 }

@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //LOAD OR GENERATE NEW LEVEL
         if (PlayerPrefs.GetInt("completedLevel", 0) >= PlayerPrefs.GetInt("currentLevel", 0))
         {
             Debug.Log("Generating new Level...");
@@ -54,8 +55,6 @@ public class GameManager : MonoBehaviour
         LoadLevel(PlayerPrefs.GetInt("currentLevel", 0));
 
         UIManager.instance.UpdateUI();
-
-        Camera.main.GetComponent<CameraFollow>().target = surfer;
     }
 
     public void LoadLevel(int _id)
@@ -66,6 +65,7 @@ public class GameManager : MonoBehaviour
         //{
         //    return;
         //}
+
         Level newLevel = ScriptableObject.CreateInstance<Level>();
         //newLevel.id = data.id;
         newLevel.creator = level.creator;
@@ -76,13 +76,16 @@ public class GameManager : MonoBehaviour
         creator = creatorPrefab.GetComponent<PathCreator>();
         spawner = spawnerPrefab.GetComponent<PathSpawnerTest>();
         road = creatorPrefab.GetComponent<RoadMeshCreator>();
+        
         //creator.EditorData = data.creatorData;
+        //spawner.spawnEntities = data.spawnerData;
+
         creator.TriggerPathUpdate();
         road.TriggerUpdate();
         spawner.pathPrefab = creator;
-        //spawner.spawnEntities = data.spawnerData;
         spawner.UpdateEntities();
 
+        //SPAWN PLAYER
         GameObject player = Instantiate(surfer.gameObject);
         surfer = player.GetComponent<PathFollowerTest>();
         surfer.pathCreator = creator;
@@ -94,18 +97,20 @@ public class GameManager : MonoBehaviour
 
     public void GenerateNewLevel(int _id)
     {
+        //CREATE PATH
 
         Level newLevel = ScriptableObject.CreateInstance<Level>();
         newLevel.id = _id;
 
-
-
-
+        //CREATE DEFAULT PATH
         level.creator.EditorData.ResetBezierPath(level.creator.transform.position, false);
         level.creator.bezierPath.Space = PathSpace.xz;
         level.creator.bezierPath.ControlPointMode = BezierPath.ControlMode.Automatic;
+
+        //PATH SIZE IN SIGMENTS
         int numSegments = 8;
         Vector3 prevPos = Vector3.zero;
+        //CREATE PATH POINTS WITH SOME RANDOMNESS
         for (int i = 0; i < numSegments; i++)
         {
             Vector3 pos = new Vector3(Random.Range(10f, 100f), 0, Random.Range(-50f, 50f)) + prevPos;
@@ -113,6 +118,7 @@ public class GameManager : MonoBehaviour
             level.creator.bezierPath.AddSegmentToEnd(pos);
         }
 
+        //CREATE FINAL PATH POINTS TO ENSURE STRAIGHT LINE AT END
         Vector3 lastPos =  Vector3.right * level.creator.path.length;
         level.creator.bezierPath.AddSegmentToEnd(lastPos);
         level.creator.bezierPath.AddSegmentToEnd(lastPos + Vector3.right * 50f);
@@ -120,24 +126,29 @@ public class GameManager : MonoBehaviour
         level.creator.bezierPath.AddSegmentToEnd(lastPos);
 
 
+        //CREATE SPAWN ENTITIES
+
         level.spawner.ClearData();
+
+        // VALUES THAT CONTROL HOW SPAWN HAPPENS
+
         float sectionDst = 30f;
         float minDstBetweenObstacles = 10f;
         float minDstBetweenCubes = 5f;
-
         float minDstBetweenSpawnables = 5.0f;
 
 
         int maxObstacles = (int)(level.creator.path.length / sectionDst);
+        
         //Start at 2 to give room to increase height
         //PLAYER STARTS AT 20 TO MAKE PATH APPEAR BEHIND
-
         for (int i = 2; i < maxObstacles - 1; i++)
         {
             //THERE ARE 60 - 20 = 40 UNITS OF SPACE TO ADD THINGS HERE
             if (i == 2)
             {
-
+                //SPAWN HEIGHT BLOCKS AND COINS
+                //MAX HEIGHT IS 2 AND HAVE LOWER CHANCE
                 int randHeight = Random.Range(2, 6);
                 int randCoins = Random.Range(2, 10);
                 int randHeight2 = Random.Range(0, randHeight / 2);
@@ -213,9 +224,11 @@ public class GameManager : MonoBehaviour
                 continue;
             }
 
+            //CHANCE TO SPAWN OBSTACLE = 50%
+            //CHANCE OF SPAWN NO OBSTACLES = .5 epx (maxObstacles - 2 ) = VERY LOW
             if (Random.value >= 0.5)
             {
-
+                //SELECT HOW MANY IN SECTION AND WHAT OBSTACLES TO SPAWN
                 int sectionObstacleAmount = Random.Range(2, 4);
                 int[] obstacleIDs = new int[sectionObstacleAmount];
                 int[] minRequiredHeight = new int[sectionObstacleAmount];
@@ -238,6 +251,7 @@ public class GameManager : MonoBehaviour
 
                 int maxSpawnables = (int)(sectionDst / minDstBetweenObstacles);
                 int currentObstacle = 0;
+                //SPAWN OBSTACLES
                 for (int l = 0; l < maxSpawnables; l++)
                 {
                     if (currentObstacle < sectionObstacleAmount)
@@ -246,7 +260,8 @@ public class GameManager : MonoBehaviour
                         int spawnColumn = Random.Range(-2, 2);
                         float spawnOffset = spawnColumn;
 
-
+                        //IF OBSTACLE HAS A MIN HEIGHT, SPAWN BLOCKS TO HELP PLAYER
+                        //PLAYER MUST ALWAYS HAVE A CHANCE TO WIN, LOSE ONLY IF MISSPLAY
                         if (minRequiredHeight[currentObstacle] > 0)
                         {
                             level.spawner.AddSpawnEntity(EEntityType.CUBE, level.creator.path.GetPointAtDistance(spawnDst - minDstBetweenCubes), 0, spawnDst - minDstBetweenCubes, minRequiredHeight[currentObstacle], spawnOffset);
@@ -290,6 +305,7 @@ public class GameManager : MonoBehaviour
             }
 
         }
+        //SPAWN FINAL SECTION 
         level.spawner.AddSpawnEntity(EEntityType.OBSTACLE, level.creator.path.GetPointAtDistance(level.creator.path.length - 40f, EndOfPathInstruction.Stop), 6, level.creator.path.length - 40f);
 
 

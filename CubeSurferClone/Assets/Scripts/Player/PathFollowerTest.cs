@@ -19,7 +19,7 @@ public class PathFollowerTest : PathFollower
         }
     }
     
-
+    //MOVE ALLONG PATH WITH OFFSET
     protected override void Move()
     {
         distanceTravelled += speed * Time.deltaTime;
@@ -35,10 +35,11 @@ public class PathFollowerTest : PathFollower
             this.enabled = false;
         }
     }
-
+    //SET OFFSET
     public void PathSideOffset(float _value)
     {
         offset += _value;
+        //CLAMP TO KEEP ON PATH
         offset = Mathf.Clamp(offset, -offsetLimit, offsetLimit);
     }
 

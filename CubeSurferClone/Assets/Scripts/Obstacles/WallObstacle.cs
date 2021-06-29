@@ -11,11 +11,8 @@ public struct HasBlock
 public class WallObstacle : Obstacle
 {
     public int[] offsetHeight = new int[5];
-
     public HasBlock[] hasBlock = new HasBlock[5];
-
     public int scoreMultiplier = 1;
-
     public bool isFinish;
 
     
@@ -25,6 +22,7 @@ public class WallObstacle : Obstacle
         type = EObstacleType.WALL;
     }
 
+    //MINIMUN BOX HEIGHT NEEDED TO PASS OBSTACLE
     public int GetLowestPoint()
     {
         int lowest = 10;

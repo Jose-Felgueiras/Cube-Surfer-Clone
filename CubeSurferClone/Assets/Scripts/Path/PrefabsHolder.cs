@@ -13,24 +13,15 @@ public class PrefabsHolder : MonoBehaviour
     [SerializeField]
     public GameObject heightBlock;
 
-
-    public PrefabsHolder  ()
+    public void Awake()
     {
         if (!instance)
         {
             instance = this;
         }
-
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        else
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

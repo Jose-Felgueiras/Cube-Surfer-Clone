@@ -30,24 +30,24 @@ namespace PathCreationEditor
         }
 
 
-        //public  void OnInspectorGUI()
-        //{
-        //    base.OnInspectorGUI();
-        //    switch (spawner.selectedType)
-        //    {                               
-        //        case EEntityType.OBSTACLE:
-        //            DrawObstacleInspector();
-        //            break;
-        //        case EEntityType.CUBE:
-        //            DrawCubeInspector();
-        //            break;
-        //        case EEntityType.COIN:
-        //            DrawCoinInspector();
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            switch (spawner.selectedType)
+            {
+                case EEntityType.OBSTACLE:
+                    DrawObstacleInspector();
+                    break;
+                case EEntityType.CUBE:
+                    DrawCubeInspector();
+                    break;
+                case EEntityType.COIN:
+                    DrawCoinInspector();
+                    break;
+                default:
+                    break;
+            }
+        }
 
         void DrawObstacleInspector()
         {
@@ -62,7 +62,6 @@ namespace PathCreationEditor
                 }
             }
         }
-
         void DrawCubeInspector()
         {
             using (var check = new EditorGUI.ChangeCheckScope())
@@ -76,7 +75,6 @@ namespace PathCreationEditor
                 }
             }
         }
-
         void DrawCoinInspector()
         {
 

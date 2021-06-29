@@ -41,6 +41,8 @@ public class UIManager : MonoBehaviour
     GameObject nextLevelPanel;
     [SerializeField]
     GameObject clickMePanel;
+
+    //CALLED AFTER LEVEL IS GENERATED
     public void UpdateUI()
     {
         scoreText.text = PlayerPrefs.GetInt("score", 0).ToString();
@@ -55,6 +57,7 @@ public class UIManager : MonoBehaviour
 
     }
 
+    //CALLED AFTER GAME IS STARTE
     public void StartGame()
     {
         levelIndicatorPanel.SetActive(false);
@@ -62,11 +65,13 @@ public class UIManager : MonoBehaviour
         levelProgressPanel.SetActive(true);
     }
 
+    //CALLED DURING
     public void UpdatePathProgress(float _percent)
     {
         currentLevelProgress.value = _percent;
     }
 
+    //CALLED AFTER GAME LOST
     public void ShowGameOver()
     {
         levelProgressPanel.SetActive(false);
@@ -74,6 +79,7 @@ public class UIManager : MonoBehaviour
         gameOverPanel.SetActive(true);
     }
 
+    //CALLED AFTER GAME WON
     public void NextLevel(int _score)
     {
         AudioManager.instance.Play("win");
@@ -84,6 +90,7 @@ public class UIManager : MonoBehaviour
 
         nextLevelPanel.SetActive(true);
     }
+
     public void HideScore()
     {
         scoreText.transform.parent.gameObject.SetActive(false);

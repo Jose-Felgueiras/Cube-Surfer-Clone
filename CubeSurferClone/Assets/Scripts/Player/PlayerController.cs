@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using PathCreation;
 using PathCreation.Examples;
 
-public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IInitializePotentialDragHandler
+public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, IInitializePotentialDragHandler
 {
     public PathFollowerTest follower;
     public float sensitivity = 2f;
@@ -13,18 +13,22 @@ public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     Vector2 pressPosition;
     float xOffset;
 
+
+    //CALLED IMMEDIATELY AFTER INPUT IS DETECTED
     public void OnInitializePotentialDrag(PointerEventData _data)
     {
         UIManager.instance.StartGame();
         follower.enabled = true;
     }
 
+    //CALLED IMMEDIATELY AFTER DRAG INPUT IS DETECTED
     public void OnBeginDrag(PointerEventData _data)
     {
         pressPosition = _data.position;
         
     }
 
+    //CALLED EVERY TIME DRAG IS DETECTED
     public void OnDrag(PointerEventData _data)
     {
         if (_data.dragging)
@@ -37,8 +41,5 @@ public class PlayerController : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
     }
 
-    public void OnEndDrag(PointerEventData _data)
-    {
-                                     
-    }
+
 }

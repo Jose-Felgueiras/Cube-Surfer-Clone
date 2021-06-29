@@ -5,18 +5,6 @@ using UnityEngine;
 public class HeightBlock : MonoBehaviour
 {
     SpawnEntity entity;
-
+    //HEIGHT TO ADD IF HIT
     public int height;
-
-    SpawnEntity Entity
-    {
-        get
-        {
-            return entity;
-        }
-        set
-        {
-            entity = value;
-        }
-    }
 }

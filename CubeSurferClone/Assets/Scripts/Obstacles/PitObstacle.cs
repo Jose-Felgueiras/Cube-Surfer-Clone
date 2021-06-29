@@ -31,18 +31,17 @@ public class PitObstacle : Obstacle
             surfer = collision.gameObject.GetComponent<Surfer>();
             follower = collision.gameObject.GetComponentInParent<PathFollowerTest>();
             AudioManager.instance.Play("pit");
-
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.GetComponent<Surfer>())
         {
             AudioManager.instance.Stop("pit");
-
         }
     }
+    
+    //CHECK IF OUTSIDE COLLISION BOUNDS
     private void FixedUpdate()
     {
         if (surfer)
@@ -91,6 +90,7 @@ public class PitObstacle : Obstacle
             }
             if (isSurferInside)
             {
+                //SINK CUBE STACK
                 surfer.SetTowerCollision(false);
                 newHeight -= sinkRate * Time.fixedDeltaTime;
                 surfer.transform.localPosition = Vector3.left * (surfer.Height + newHeight) + Vector3.left * .5f;
@@ -99,6 +99,7 @@ public class PitObstacle : Obstacle
         }
     }
 
+    //MINIMUN BOX HEIGHT NEEDED TO PASS OBSTACLE
     public int GetLowestCollumnOcupy()
     {
         int lowest = 10;
@@ -111,14 +112,5 @@ public class PitObstacle : Obstacle
         }
 
         return lowest;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(pointsToCheck[0], .1f);
-        Gizmos.DrawSphere(pointsToCheck[1], .1f);
-        Gizmos.DrawSphere(pointsToCheck[2], .1f);
-        Gizmos.DrawSphere(pointsToCheck[3], .1f);
     }
 }
